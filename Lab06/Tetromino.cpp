@@ -81,12 +81,12 @@ void Tetromino::rotateClockwise() {
 };
 
 void Tetromino::printToConsole() const {
-	for (int i = -3; i <= 3; i++) {
+	for (int i = 3; i >= -3; i--) {
 		for (int j = -3; j <= 3; j++) {
 			bool match = false;
 			for (Point square : blockLocs) {
 				
-				if (i == square.getX() && j == square.getY()) {
+				if (i == square.getY() && j == square.getX()) {
 					match = true;
 				}
 			}
