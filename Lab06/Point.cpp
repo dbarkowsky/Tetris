@@ -1,4 +1,5 @@
 #include "Point.h"
+#include <string>
 
 Point::Point() {
 	setXY(0, 0);
@@ -44,5 +45,5 @@ void Point::multiplyY(const int factor) {
 };
 
 std::string Point::toString() const {
-	return x + " " + y;
+	return "[" + std::to_string(getX()) + "," + std::to_string(getY()) + "]";
 };
