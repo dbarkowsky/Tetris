@@ -71,12 +71,14 @@ void Tetromino::setShape(TetShape shape) {
 };
 
 void Tetromino::rotateClockwise() {
-	for (Point& square : blockLocs) {
-		int newX{ square.getY() };
-		int newY{ square.getX() * -1 };
-		
-		square.setX(newX);
-		square.setY(newY);
+	if (getShape() != TetShape::O) {
+		for (Point& square : blockLocs) {
+			int newX{ square.getY() };
+			int newY{ square.getX() * -1 };
+
+			square.setX(newX);
+			square.setY(newY);
+		}
 	}
 };
 

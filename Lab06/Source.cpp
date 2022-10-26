@@ -2,16 +2,25 @@
 #include <iostream>
 #include "TestSuite.h"
 #include "Tetromino.h"
+#include "Gameboard.h"
 #include <vector>
+
+void testGameboard() {
+    Gameboard board;
+    
+    Point pt1{ 3, 5 };
+    board.setContent(pt1, 3);
+    board.printToConsole();
+}
 
 int main()
 {
+    testGameboard();
     TestSuite::runTestSuite();
+    
 
+    // Manual shape testing
     Tetromino shape = Tetromino();
-
-
-
     char input{};;
     
     do {
