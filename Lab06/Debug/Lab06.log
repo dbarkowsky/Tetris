@@ -1,0 +1,10 @@
+﻿  Gameboard.cpp
+C:\Users\C0509422\OneDrive - shuckle\ICS-214 (C to C++)\Labs\Lab06-08 - Tetris\Lab Files\Lab06\Gameboard.cpp(140,20): warning C4018: '<': signed/unsigned mismatch
+  GridTetromino.cpp
+  Point.cpp
+  Source.cpp
+  TestSuite.cpp
+C:\Users\C0509422\OneDrive - shuckle\ICS-214 (C to C++)\Labs\Lab06-08 - Tetris\Lab Files\Lab06\TestSuite.cpp(50,20): warning C4018: '<': signed/unsigned mismatch
+  Tetromino.cpp
+  Generating Code...
+  Lab06.vcxproj -> C:\Users\C0509422\OneDrive - shuckle\ICS-214 (C to C++)\Labs\Lab06-08 - Tetris\Lab Files\Debug\Lab06.exe
