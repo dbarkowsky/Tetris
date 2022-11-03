@@ -28,6 +28,7 @@ class Tetromino {
 	private:
 		TetColor color;
 		TetShape shape;
+	protected:
 		std::vector<Point> blockLocs; // Array of points that make up the tetromino
 	public:
 		/// <summary>

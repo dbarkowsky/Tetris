@@ -1,19 +1,223 @@
-#include <iostream>
-#include <cassert>
-#include "Point.h"
-#include "Gameboard.h"
 #include "TestSuite.h"
+
+#ifdef POINT
+#include "Point.h"
+#endif
+
+#ifdef TETROMINO
+#include "Tetromino.h"
+#endif 
+
+#ifdef GAMEBOARD
+#include "Gameboard.h"
+#endif
+
+#ifdef GRIDTETROMINO
+#include "GridTetromino.h"
+#endif
+
+#include <cassert>
+#include <iostream>
+#include <string>
+
 
 
 void TestSuite::runTestSuite()
 {
-	std::cout << "=== Running TestSuite =========================" << "\n";	// run some sanity tests on our classes to ensure they're working as expected.
+	std::cout << "=== Running TestSuite =========================" << "\n";
+	// run some sanity tests on our classes to ensure they're working as expected.
+	//std::cout << "uncomment the #define statements in TestSuite.h when ready to test.\n\n";
+	testPointClass();
+	testTetrominoClass();
 	testGameboardClass();
+	testGridTetrominoClass();
 	std::cout << "=== TestSuite complete ========================" << "\n\n";
 }
 
+void TestSuite::announceTest(const std::string& className) {
+	std::cout << "Testing " << className << " class...";
+}
 
-bool TestSuite::isGameboardEmpty(const Gameboard& g)
+void TestSuite::announceTestCompletion() {
+	std::cout << "passed!\n\n";
+}
+
+void TestSuite::announceNotTested(const std::string& className)
+{
+	std::cout << "Class not tested: " << className << ".  ";
+	std::cout << "(uncomment #define ";
+	// convert to uppercase
+	for (int i = 0; i < className.length(); i++)
+	{
+		char ucChar = className[i];
+		if (ucChar >= 'a' && ucChar <= 'z') {
+			ucChar = ucChar - ('a' - 'A');
+		}
+		std::cout << ucChar;
+	}
+	std::cout << " in TestSuite.h to test)\n\n";
+}
+
+
+
+
+
+void TestSuite::testPointClass()
+{
+#ifdef POINT
+	announceTest("Point");
+	//std::cout << "testPointClass()...\n";
+
+	Point p;
+
+	// test our initial values are 0,0
+	assert(p.getX() == 0 && "Point ctor - x not initialized to 0");
+	assert(p.getY() == 0 && "Point ctor - y not initialized to 0");
+
+	// test setX()
+	p.setX(1);
+	assert(p.getX() == 1 && "Point::setX() failed");
+	p.setX(-1);
+	assert(p.getX() == -1 && "Point::setX() failed");
+
+	// test setY()
+	p.setY(2);
+	assert(p.getY() == 2 && "Point::setY() failed");
+	p.setY(-2);
+	assert(p.getY() == -2 && "Point::setY() failed");
+
+	// test setXY()
+	p.setXY(3, 4);
+	assert(p.getX() == 3 && p.getY() == 4 && "Point::setXY() failed");
+	p.setXY(-3, -4);
+	assert(p.getX() == -3 && p.getY() == -4 && "Point::setXY() failed");
+
+	// test constructor with 2 params
+	Point q(3, 4);
+	assert(q.getX() == 3 && q.getY() == 4 && "Point::ctor failed to set default params");
+
+	// test swapXY()
+	q.swapXY();
+	assert(q.getX() == 4 && q.getY() == 3 && "Point::swapXY() failed");
+
+	// test multiplyX()
+	q.multiplyX(-1);
+	assert(q.getX() == -4 && "Point::multiplyX() failed");
+
+	// test multiplyY()
+	q.multiplyY(-1);
+	assert(q.getY() == -3 && "Point::multiplyY() failed");
+
+	// test copy constructor
+	q.setXY(1, 2);
+	Point r = q;
+	assert(r.getX() == q.getX() && r.getY() == q.getY() && "Point copy ctor failed");
+	r.setXY(3, 4);
+	assert(r.getX() == 3 && r.getY() == 4
+		&& q.getX() == 1 && q.getY() == 2 && "Point::setXY() failed");
+
+	Point s{ 5,6 };
+	std::cout << "expected:\t[5,6]\n";
+	std::cout << "actual: \t" << s.toString() << "\n";
+
+	// ensure const methods are actually const
+	// These lines will cause compile time errors you have methods in your Point class that
+	// should be labelled as const (because the methods don't change the internal member
+	// variables of yoru class).
+	// The solution: make these const methods!  (see LearnCpp 13.2- const class objects and member functions)
+	const Point cPoint{};
+	cPoint.getX();
+	cPoint.getY();
+	cPoint.toString();
+
+	announceTestCompletion();
+#else
+	announceNotTested("Point");
+#endif
+
+}
+
+
+
+void TestSuite::testTetrominoClass()
+{
+#ifdef TETROMINO
+	announceTest("Tetromino");
+
+	Tetromino t;
+
+
+	assert(t.getColor() == TetColor::RED ||
+		t.getColor() == TetColor::ORANGE ||
+		t.getColor() == TetColor::YELLOW ||
+		t.getColor() == TetColor::GREEN ||
+		t.getColor() == TetColor::BLUE_LIGHT ||
+		t.getColor() == TetColor::BLUE_DARK ||
+		t.getColor() == TetColor::PURPLE &&
+		"default Tetromino not initialized to valid color.");
+
+	assert(t.getShape() == TetShape::S ||
+		t.getShape() == TetShape::Z ||
+		t.getShape() == TetShape::L ||
+		t.getShape() == TetShape::J ||
+		t.getShape() == TetShape::O ||
+		t.getShape() == TetShape::I ||
+		t.getShape() == TetShape::T &&
+		"default Tetromino not initialized to valid shape.");
+
+	int blockcount = BLOCK_COUNT;
+
+	assert(t.blockLocs.size() == blockcount &&
+		"default Tetromino has no blockLocs - likely because no default set in constructor");
+
+	t.setShape(TetShape::S);
+	assert(t.blockLocs.size() == blockcount && "Tetromino shape size should be: 4");
+	t.setShape(TetShape::Z);
+	assert(t.blockLocs.size() == blockcount && "Tetromino shape size should be 4");
+	t.setShape(TetShape::L);
+	assert(t.blockLocs.size() == blockcount && "Tetromino shape size should be 4");
+	t.setShape(TetShape::J);
+	assert(t.blockLocs.size() == blockcount && "Tetromino shape size should be 4");
+	t.setShape(TetShape::O);
+	assert(t.blockLocs.size() == blockcount && "Tetromino shape size should be 4");
+	t.setShape(TetShape::I);
+	assert(t.blockLocs.size() == blockcount && "Tetromino shape size should be 4");
+	t.setShape(TetShape::T);
+	assert(t.blockLocs.size() == blockcount && "Tetromino shape size should be 4");
+
+
+	// test the rotate functionality of a single block
+	t.blockLocs.clear();
+	t.blockLocs.push_back(Point(1, 2));
+	t.rotateClockwise();
+	assert(t.blockLocs[0].getX() == 2 && t.blockLocs[0].getY() == -1 && "Tetromino::rotateClockwise() failed");
+	t.rotateClockwise();
+	assert(t.blockLocs[0].getX() == -1 && t.blockLocs[0].getY() == -2 && "Tetromino::rotateClockwise() failed");
+	t.rotateClockwise();
+	assert(t.blockLocs[0].getX() == -2 && t.blockLocs[0].getY() == 1 && "Tetromino::rotateClockwise() failed");
+	t.rotateClockwise();
+	assert(t.blockLocs[0].getX() == 1 && t.blockLocs[0].getY() == 2 && "Tetromino::rotateClockwise() failed");
+
+	// ensure const methods are actually const
+	// These lines will cause compile time errors you have methods in your Tetromino class that
+	// should be labelled as const (because the methods don't change the internal member
+	// variables of yoru class).
+	// (see LearnCpp 13.2- const class objects and member functions)
+	const Tetromino cTetromino;
+	cTetromino.printToConsole();
+	cTetromino.getColor();
+	cTetromino.getShape();
+
+	// Test const 
+	announceTestCompletion();
+#else
+	announceNotTested("Tetromino");
+#endif
+
+}
+
+#ifdef GAMEBOARD
+bool isGameboardEmpty(Gameboard& g)
 {
 	for (int x = 0; x < Gameboard::MAX_X; x++) {
 		for (int y = 0; y < Gameboard::MAX_Y; y++)
@@ -23,11 +227,13 @@ bool TestSuite::isGameboardEmpty(const Gameboard& g)
 	}
 	return true;
 }
+#endif
+
 
 void TestSuite::testGameboardClass()
 {
-	std::cout << "testGameboardClass... \n";
 #ifdef GAMEBOARD
+	announceTest("Gameboard");
 	Gameboard g;
 	// test if grid content is initialized to empty blocks
 	for (int x = 0; x < Gameboard::MAX_X; x++) {
@@ -71,18 +277,18 @@ void TestSuite::testGameboardClass()
 
 	// test isEmpty
 	g.empty();
-	assert(TestSuite::isGameboardEmpty(g) == true && "Gameboard.isGameboardEmpty() returned false when true expected");
+	assert(isGameboardEmpty(g) == true && "Gameboard.isGameboardEmpty() returned false when true expected");
 	g.setContent(0, 0, 1);
-	assert(TestSuite::isGameboardEmpty(g) == false && "Gameboard.isGameboardEmpty() returned true when false expected");
+	assert(isGameboardEmpty(g) == false && "Gameboard.isGameboardEmpty() returned true when false expected");
 	g.empty();
-	assert(TestSuite::isGameboardEmpty(g) == true && "Gameboard.isGameboardEmpty() returned false when true expected");
+	assert(isGameboardEmpty(g) == true && "Gameboard.isGameboardEmpty() returned false when true expected");
 
 	// test empty()
 	for (int y = 0; y < Gameboard::MAX_Y; y++) {	// fill the whole board
 		g.fillRow(y, 1);
 	}
 	g.empty();	// empty the board
-	assert(TestSuite::isGameboardEmpty(g) == true &&
+	assert(isGameboardEmpty(g) == true &&
 		"Gameboard.isGameboardEmpty() returned false when true expected"); // verify the board is empty
 
 	// test copyRowIntoRow()
@@ -139,7 +345,7 @@ void TestSuite::testGameboardClass()
 	g.fillRow(1, 2);
 	g.fillRow(3, 2);
 	assert(g.removeCompletedRows() == 2 && "Gameboard.removeCompletedRows() should return 2");
-	assert(TestSuite::isGameboardEmpty(g) == true && "Gameboard.isGameboardEmpty() should return true");
+	assert(isGameboardEmpty(g) == true && "Gameboard.isGameboardEmpty() should return true");
 
 	// test if a row gets moved down by removeCompletedRows()
 	g.empty();
@@ -228,12 +434,62 @@ void TestSuite::testGameboardClass()
 	g3.setContent(invalidPoints2, 1);
 
 
-	std::cout << "passed!" << "\n";
+	announceTestCompletion();
 #else
-	std::cout << "Gameboard class not tested.  ";
-	std::cout << "Uncomment #define GAMEBOARD in TestSuite.h to test\n";
+	announceNotTested("Gameboard");
 #endif	
 }
+
+
+
+void TestSuite::testGridTetrominoClass()
+{
+#ifdef GRIDTETROMINO
+	std::cout << "testGridTetrominoClass...\n";
+
+	GridTetromino gt;
+
+	// check if constructor sets gridLoc to 0,0
+	assert(gt.getGridLoc().getX() == 0 && gt.getGridLoc().getY() == 0);
+
+	// test setGridLoc(x,y)
+	gt.setGridLoc(4, 5);
+	assert(gt.getGridLoc().getX() == 4 && gt.getGridLoc().getY() == 5);
+
+	// test setGridLoc(Point)
+	gt.setGridLoc(Point(8, 9));
+	assert(gt.getGridLoc().getX() == 8 && gt.getGridLoc().getY() == 9);
+
+	// test move()
+	gt.setGridLoc(1, 2);
+	gt.move(5, 5);
+	assert(gt.getGridLoc().getX() == 6 && gt.getGridLoc().getY() == 7);
+
+
+	// test getBlockLocsMappedToGrid()
+	gt.blockLocs = { Point(1,2) };
+	gt.setGridLoc(5, 5);
+	std::vector<Point> locs = gt.getBlockLocsMappedToGrid();
+	assert(locs[0].getX() == 6 && locs[0].getY() == 7);
+
+	// A const gridTetromino should be able to call the following methods
+	// (since these methods don't change the state of the class)
+	// If these stop you from compiling, it is because you haven't labelled these
+	// methods as const.
+	const GridTetromino gt2;
+	gt2.getGridLoc();
+	gt2.getBlockLocsMappedToGrid();
+
+	// a gridTetromino should still be able to access methods from the Tetromino class.
+	gt2.getColor();
+
+	announceTestCompletion();
+#else
+	announceNotTested("GridTetromino");
+#endif	
+}
+
+
 
 
 

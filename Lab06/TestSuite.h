@@ -1,19 +1,30 @@
 #ifndef TESTSUITE_H
 #define TESTSUITE_H
 
-// This class runs some automated testing for the Gameboard class
+// This class runs some automated testing for Point and Tetromino classes
 // Two steps are required to activate it:
 // 1) Call TestSuite::runTestSuite() from main()
 // 2) Uncomment the #define statements directly below:
 //-----------------------------------------------------------------------
+#define POINT
+#define TETROMINO
 #define GAMEBOARD
-#include "Gameboard.h"
+#define GRIDTETROMINO
+
+#include <string>
 
 class TestSuite {
 
-private:	
-	static void testGameboardClass();	// tests for the Gameboard class
-	static bool isGameboardEmpty(const Gameboard& g);
+private:
+	static const int BLOCK_COUNT{ 4 };	// # of blocks in a Tetromino
+	static void testPointClass();		// tests for the Point class
+	static void testTetrominoClass();	// tests for the Tetromino class
+	static void testGameboardClass();
+	static void testGridTetrominoClass(); // tests for the GridTetromino class
+
+	static void announceTest(const std::string& className);
+	static void announceTestCompletion();
+	static void announceNotTested(const std::string& className);
 
 public:
 	// This will run a series of tests on the Point and Tetromino classes
@@ -22,4 +33,4 @@ public:
 };
 
 
-#endif /* TESTSUITE_H */
+#endif // !TESTSUITE_H
