@@ -4,6 +4,7 @@
 #include "Tetromino.h"
 #include "Gameboard.h"
 #include <vector>
+#include <SFML/Graphics.hpp>
 
 void testGameboard() {
     Gameboard board;
@@ -13,16 +14,11 @@ void testGameboard() {
     board.printToConsole();
 }
 
-int main()
-{
-    testGameboard();
-    TestSuite::runTestSuite();
-    
-
+void manualTesting() {
     // Manual shape testing
     Tetromino shape = Tetromino();
     char input{};;
-    
+
     do {
         std::cout << std::endl;
         std::cout << "Valid shapes: S, Z, L, J, O, I, T " << std::endl;
@@ -59,7 +55,7 @@ int main()
             shape.rotateClockwise();
             break;
         case 'x':
-            return 0;
+            exit(0);
             break;
         default:
             std::cout << "Invalid input. Try again." << std::endl;
@@ -67,4 +63,13 @@ int main()
         }
         shape.printToConsole();
     } while (input != 'x');
+}
+
+int main()
+{
+    testGameboard();
+    TestSuite::runTestSuite();
+    manualTesting();
+
+    
 }
