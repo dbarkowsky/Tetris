@@ -96,6 +96,8 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 }
 
 // Used to return propper score increments
+// - param 1: int rowsCleared --- number of cleared rows
+// return: int representing score
 int TetrisGame::calcScore(const int rowsCleared) {
 	switch (rowsCleared)
 	{
