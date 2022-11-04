@@ -19,7 +19,8 @@ enum TetShape {
 	J,
 	O,
 	I,
-	T
+	T,
+	COUNT
 };
 
 class Tetromino {
@@ -69,4 +70,6 @@ class Tetromino {
 		///		Prints a grid of dots with x's representing the tetromino
 		/// </summary>
 		void printToConsole() const;
+
+		static TetShape getRandomShape();
 };

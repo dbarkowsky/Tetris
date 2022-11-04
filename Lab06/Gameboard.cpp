@@ -57,7 +57,7 @@ void Gameboard::setContent(std::vector<Point>& points, const int content) {
 	}
 }
 
-bool Gameboard::areAllLocsEmpty(std::vector<Point>& points) const {
+bool Gameboard::areAllLocsEmpty(const std::vector<Point>& points) const {
 	for (const Point& point : points) {
 		if (isValidPoint(point)) {
 			if (grid[point.getY()][point.getX()] != EMPTY_BLOCK) {

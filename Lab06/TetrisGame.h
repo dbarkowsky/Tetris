@@ -27,7 +27,7 @@ class TetrisGame
 public:
 	// STATIC CONSTANTS
 	static const int BLOCK_WIDTH;			  // pixel width of a tetris block, init to 32
-	static const int BLOCK_HEIGHT;			  // pixel height of a tetris block, int to 32
+	static const int BLOCK_HEIGHT;			  // pixel height of a tetris block, init to 32
 	static const double MAX_SECONDS_PER_TICK; // the slowest "tick" rate (in seconds), init to 0.75
 	static const double MIN_SECONDS_PER_TICK; // the fastest "tick" rate (in seconds), init to 0.20
 
@@ -73,18 +73,21 @@ public:
 	//   called every game loop
 	// - params: none
 	// - return: nothing
-	draw();								
+	void draw() const;								
 
 	// Event and game loop processing
 	// handles keypress events (up, left, right, down, space)
 	// - param 1: sf::Event event
 	// - return: nothing
-	onKeyPressed();
+	void onKeyPressed(sf::Event& e);
 
 	// called every game loop to handle ticks & tetromino placement (locking)
 	// - param 1: float secondsSinceLastLoop
 	// return: nothing
-	processGameLoop();
+	void processGameLoop(float secondsSinceLastLoop);
+
+	// Used to return propper score increments
+	int calcScore(const int rowsCleared);
 
 	// A tick() forces the currentShape to move (if there were no tick,
 	// the currentShape would float in position forever). This should
@@ -92,7 +95,7 @@ public:
 	// the currentShape (it can move no further).
 	// - params: none
 	// - return: nothing
-	tick();
+	void tick();
 
 private:
 	// reset everything for a new game (use existing functions) 
@@ -103,18 +106,18 @@ private:
 	//  - pick next shape again (for the "on-deck" shape)
 	// - params: none
 	// - return: nothing
-	reset();
+	void reset();
 
 	// assign nextShape.setShape a new random shape  
 	// - params: none
 	// - return: nothing
-	pickNextShape();
+	void pickNextShape();
 	
 	// copy the nextShape into the currentShape (through assignment)
 	//   position the currentShape to its spawn location.
 	// - params: none
 	// - return: bool, true/false based on isPositionLegal()
-	spawnNextShape();																	
+	bool spawnNextShape();																	
 
 	// Test if a rotation is legal on the tetromino and if so, rotate it. 
 	//  To accomplish this:
@@ -124,7 +127,7 @@ private:
 	//      if so - rotate the original tetromino.
 	// - param 1: GridTetromino shape
 	// - return: bool, true/false to indicate successful movement
-	attemptRotate();
+	bool attemptRotate(GridTetromino& shape);
    
 	// test if a move is legal on the tetromino, if so, move it.
 	//  To do this:
@@ -136,13 +139,13 @@ private:
 	// - param 2: int x;
 	// - param 3: int y;
 	// - return: true/false to indicate successful movement
-	attemptMove();												
+	bool attemptMove(GridTetromino& shape, int x, int y);												
 
 	// drops the tetromino vertically as far as it can 
 	//   legally go.  Use attemptMove(). This can be done in 1 line.
 	// - param 1: GridTetromino shape
 	// - return: nothing;
-	drop();
+	void drop(GridTetromino& shape);
 
 	// copy the contents (color) of the tetromino's mapped block locs to the grid.
 		//	 1) get the tetromino's mapped locs via tetromino.getBlockLocsMappedToGrid()
@@ -151,7 +154,7 @@ private:
 		//      to true
 		// - param 1: GridTetromino shape
 		// - return: nothing
-	lock();
+	void lock(GridTetromino& shape);
 	
 	// Graphics methods ==============================================
 	
@@ -172,14 +175,14 @@ private:
 	// param 3: int yOffset
 	// param 4: TetColor color
 	// return: nothing
-	drawBlock();
+	void drawBlock(const Point& topLeft, int xOffset, int yOffset, TetColor color) const;
 										
 	// Draw the gameboard blocks on the window
 	//   Iterate through each row & col, use drawBlock() to 
 	//   draw a block if it isn't empty.
 	// params: none
 	// return: nothing
-	drawGameboard();
+	void drawGameboard() const;
 	
 	// Draw a tetromino on the window
 	//	 Iterate through each mapped loc & drawBlock() for each.
@@ -188,14 +191,14 @@ private:
 	// param 1: GridTetromino tetromino
 	// param 2: Point topLeft
 	// return: nothing
-	drawTetromino();
+	void drawTetromino(const GridTetromino& tetromino, const Point& topLeft) const;
 	
 	// update the score display
 	// form a string "score: ##" to display the current score
 	// user scoreText.setString() to display it.
 	// params: none:
 	// return: nothing
-	updateScoreDisplay();
+	void updateScoreDisplay();
 
 	// State & gameplay/logic methods ================================
 
@@ -205,7 +208,7 @@ private:
 	// - param 1: GridTetromino shape
 	// - return: bool, true if shape is within borders (isShapeWithinBorders()) and 
 	//           the shape's mapped board locs are empty (false otherwise).
-	isPositionLegal() const;
+	bool isPositionLegal(const GridTetromino& shape) const;
 
 	
 	// Determine if the shape is within the left, right, & bottom gameboard borders
@@ -215,7 +218,7 @@ private:
 	// - param 1: GridTetromino shape
 	// - return: bool, true if the shape is within the left, right, and lower border
 	//	         of the grid, but *NOT* the top border (false otherwise)
-	isWithinBorders() const;
+	bool isWithinBorders(const GridTetromino& shape) const;
 
 
 	// set secsPerTick 
@@ -223,7 +226,7 @@ private:
 	//   - advanced: base it on score (higher score results in lower secsPerTick)
 	// params: none
 	// return: nothing
-	determineSecondsPerTick();
+	void determineSecondsPerTick();
 
 
 };

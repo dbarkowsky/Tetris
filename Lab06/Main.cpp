@@ -11,14 +11,17 @@ int main()
 	// run some sanity tests on our classes to ensure they're working as expected.
 	TestSuite::runTestSuite();
 
+	// Seed random generator
+	srand(time(NULL));
+
 	sf::Sprite blockSprite;			// the tetromino block sprite
 	sf::Texture blockTexture;		// the tetromino block texture
-	//sf::Sprite backgroundSprite;	// the background sprite
-	//sf::Texture backgroundTexture;	// the background texture
+	sf::Sprite backgroundSprite;	// the background sprite
+	sf::Texture backgroundTexture;	// the background texture
 
 	// load images
-	//backgroundTexture.loadFromFile("images/background.png");// load the background sprite
-	//backgroundSprite.setTexture(backgroundTexture);
+	backgroundTexture.loadFromFile("images/background.png");// load the background sprite
+	backgroundSprite.setTexture(backgroundTexture);
 
 	blockTexture.loadFromFile("images/tiles.png");	// load the tetris block sprite
 	blockSprite.setTexture(blockTexture);	
@@ -65,7 +68,7 @@ int main()
 
 		// Draw the game to the screen
 		window.clear(sf::Color::White);	// clear the entire window
-		//window.draw(backgroundSprite);	// draw the background (onto the window) 				
+		window.draw(backgroundSprite);	// draw the background (onto the window) 				
 		game.draw();					// draw the game (onto the window)
 		window.display();				// re-display the entire window
 	}

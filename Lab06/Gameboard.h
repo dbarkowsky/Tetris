@@ -129,7 +129,7 @@ public:
 	// Using invalid points to index into the grid would cause undefined behaviour. 
 	// - param 1: a vector of Points representing locations to test
 	// - return: true if the content at ALL VALID points is EMPTY_BLOCK, false otherwise
-	bool areAllLocsEmpty(std::vector<Point>& points) const;
+	bool areAllLocsEmpty(const std::vector<Point>& points) const;
 
 	// Remove all completed rows from the board
 	//   use getCompletedRowIndices() and removeRows() 

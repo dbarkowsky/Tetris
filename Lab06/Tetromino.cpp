@@ -104,3 +104,7 @@ void Tetromino::printToConsole() const {
 		std::cout << std::endl;
 	}
 };
+
+TetShape Tetromino::getRandomShape() {
+	return static_cast<TetShape>(rand() % TetShape::COUNT);
+}
