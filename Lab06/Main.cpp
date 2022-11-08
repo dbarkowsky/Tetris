@@ -1,6 +1,7 @@
 
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include "TetrisGame.h"
 #include "TestSuite.h"
@@ -18,6 +19,11 @@ int main()
 	sf::Texture blockTexture;		// the tetromino block texture
 	sf::Sprite backgroundSprite;	// the background sprite
 	sf::Texture backgroundTexture;	// the background texture
+
+	// Load Music
+	sf::Music music;
+	if (!music.openFromFile("audio/tetrisMusic.ogg"))
+		return -1; // error
 
 	// load images
 	backgroundTexture.loadFromFile("images/background.png");// load the background sprite
@@ -42,6 +48,11 @@ int main()
 
 	// create an event for handling userInput from the GUI (graphical user interface)
 	sf::Event guiEvent;	
+
+	// Play music
+	music.setLoop(true);
+	music.setVolume(50);
+	music.play();
 
 	// the main game loop
 	while (window.isOpen())
@@ -72,6 +83,6 @@ int main()
 		game.draw();					// draw the game (onto the window)
 		window.display();				// re-display the entire window
 	}
-	
+
 	return 0;
 }

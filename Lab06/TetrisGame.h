@@ -20,6 +20,7 @@
 #include "Gameboard.h"
 #include "GridTetromino.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 
 class TetrisGame
@@ -39,6 +40,7 @@ private:
     Gameboard board;			// the gameboard (grid) to represent where all the blocks are.
     GridTetromino nextShape;	// the tetromino shape that is "on deck".
     GridTetromino currentShape;	// the tetromino that is currently falling.
+	GridTetromino ghostShape;	// the tetromino that shows where you will drop the current piece
 	
 	// Graphics members ------------------------------------------
 	sf::Sprite& blockSprite;		// the sprite used for all the blocks.
@@ -48,6 +50,17 @@ private:
 
 	sf::Font scoreFont;				// SFML font for displaying the score.
 	sf::Text scoreText;				// SFML text object for displaying the score
+
+	// Audio members --------------------------------------------------
+	sf::SoundBuffer sfxDropBuffer;
+	sf::SoundBuffer sfxRotateBuffer;
+	sf::SoundBuffer sfxGameOverBuffer;
+	sf::SoundBuffer sfxLevelUpBuffer;
+	sf::Sound sfxRotate{ sfxRotateBuffer };
+	sf::Sound sfxDrop{ sfxDropBuffer };
+	sf::Sound sfxGameOver{ sfxGameOverBuffer };
+	sf::Sound sfxLevelUp{ sfxLevelUpBuffer };
+
 									
 	// Time members ----------------------------------------------
 	// Note: a "tick" is the amount of time it takes a block to fall one line.
@@ -175,7 +188,7 @@ private:
 	// param 3: int yOffset
 	// param 4: TetColor color
 	// return: nothing
-	void drawBlock(const Point& topLeft, int xOffset, int yOffset, TetColor color) const;
+	void drawBlock(const Point& topLeft, int xOffset, int yOffset, TetColor color, const float alpha = 255.0f) const;
 										
 	// Draw the gameboard blocks on the window
 	//   Iterate through each row & col, use drawBlock() to 
@@ -191,8 +204,11 @@ private:
 	// param 1: GridTetromino tetromino
 	// param 2: Point topLeft
 	// return: nothing
-	void drawTetromino(const GridTetromino& tetromino, const Point& topLeft) const;
-	
+	void drawTetromino(const GridTetromino& tetromino, const Point& topLeft, const float alpha = 255.0f) const;
+
+	// Updates the location of the ghost shape based on position of current shap
+	void updateGhostShape();
+
 	// update the score display
 	// form a string "score: ##" to display the current score
 	// user scoreText.setString() to display it.
@@ -228,6 +244,8 @@ private:
 	// return: nothing
 	void determineSecondsPerTick();
 
+	// Load all sfx files
+	void loadAudio();
 
 };
 
