@@ -44,6 +44,7 @@ private:
 	std::vector<TetShape> shapeSack;
 	int level;
 	bool resetOnNextTick;
+	bool deleteOnNextTick;
 	
 	// Graphics members ------------------------------------------
 	sf::Sprite& blockSprite;		// the sprite used for all the blocks.

@@ -41,7 +41,7 @@ void TetrisGame::draw() const{
 }
 
 void TetrisGame::onKeyPressed(sf::Event& e) {
-	if (!resetOnNextTick || shapePlacedSinceLastGameLoop) {
+	if (!resetOnNextTick || !deleteOnNextTick || shapePlacedSinceLastGameLoop) {
 		switch (e.key.code)
 		{
 		case sf::Keyboard::Up:
@@ -74,6 +74,8 @@ void TetrisGame::onKeyPressed(sf::Event& e) {
 void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 	std::cout << "secondsSinceLastTick: " << secondsSinceLastTick
 		<< ", secondsPerTick: " << secondsPerTick << std::endl;
+	
+	secondsSinceLastTick += secondsSinceLastLoop;
 	// Prevent cases where elapsed time is very large, causing speed ups.
 	if (secondsSinceLastTick > 1) {
 		secondsSinceLastTick = secondsPerTick + 0.1; 
@@ -85,23 +87,29 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 			resetOnNextTick = false;
 			reset();
 		}
-		if (shapePlacedSinceLastGameLoop) {
-			shapePlacedSinceLastGameLoop = false;
+
+		if (deleteOnNextTick) {
+			deleteOnNextTick = false;
+			const int rowsReturned = board.removeCompletedRows();
+			score += calcScore(rowsReturned);
+			updateScoreDisplay();
+			determineLevel();
+			determineSecondsPerTick();
 			spawnNextShape();
 			pickNextShape();
+		}
+
+		if (shapePlacedSinceLastGameLoop) {
+			shapePlacedSinceLastGameLoop = false;
 			const int rowsToDelete = board.countCompletedRows();
 			if (rowsToDelete > 0) {
-				secondsSinceLastTick -= secondsPerTick;
-				const int rowsReturned = board.removeCompletedRows();
-				score += calcScore(rowsReturned);
-				updateScoreDisplay();
-				determineLevel();
-				determineSecondsPerTick();
+				deleteOnNextTick = true;
+			}
+			else {
+				spawnNextShape();
+				pickNextShape();
 			}
 		}
-	}
-	else {
-		secondsSinceLastTick += secondsSinceLastLoop;
 	}
 }
 
@@ -134,6 +142,8 @@ void TetrisGame::tick() {
 
 void TetrisGame::reset() {
 	secondsSinceLastTick = 0;
+	deleteOnNextTick = false;
+	resetOnNextTick = false;
 	music.play();
 	score = 0;
 	updateScoreDisplay();
