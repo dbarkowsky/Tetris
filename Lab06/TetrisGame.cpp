@@ -41,7 +41,7 @@ void TetrisGame::draw() const{
 }
 
 void TetrisGame::onKeyPressed(sf::Event& e) {
-	if (!resetOnNextTick || !deleteOnNextTick || shapePlacedSinceLastGameLoop) {
+	if (!resetOnNextTick && !shapePlacedSinceLastGameLoop) {
 		switch (e.key.code)
 		{
 		case sf::Keyboard::Up:
@@ -88,19 +88,6 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 			reset();
 		}
 
-		if (deleteOnNextTick) {
-			std::cout << "delete Tick" << std::endl;
-			deleteOnNextTick = false;
-			const int rowsReturned = board.removeCompletedRows();
-			score += calcScore(rowsReturned);
-			sfxClear.play();
-			updateScoreDisplay();
-			determineLevel();
-			determineSecondsPerTick();
-			spawnNextShape();
-			pickNextShape();
-		}
-
 		if (shapePlacedSinceLastGameLoop) {
 			std::cout << "place Tick" << std::endl;
 			shapePlacedSinceLastGameLoop = false;
@@ -108,10 +95,21 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 			if (rowsToDelete > 0) {
 				deleteOnNextTick = true;
 			}
-			else {
-				spawnNextShape();
-				pickNextShape();
-			}
+			spawnNextShape();
+			pickNextShape();
+		}
+	}
+
+	if (secondsSinceLastTick > secondsPerTick / 2) {
+		if (deleteOnNextTick) {
+			std::cout << "delete Tick" << std::endl;
+			const int rowsReturned = board.removeCompletedRows();
+			score += calcScore(rowsReturned);
+			sfxClear.play();
+			updateScoreDisplay();
+			determineLevel();
+			determineSecondsPerTick();
+			deleteOnNextTick = false;
 		}
 	}
 }
