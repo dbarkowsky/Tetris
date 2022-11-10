@@ -20,11 +20,6 @@ int main()
 	sf::Sprite backgroundSprite;	// the background sprite
 	sf::Texture backgroundTexture;	// the background texture
 
-	// Load Music
-	sf::Music music;
-	if (!music.openFromFile("audio/tetrisMusic.ogg"))
-		return -1; // error
-
 	// load images
 	backgroundTexture.loadFromFile("images/background.png");// load the background sprite
 	backgroundSprite.setTexture(backgroundTexture);
@@ -48,11 +43,6 @@ int main()
 
 	// create an event for handling userInput from the GUI (graphical user interface)
 	sf::Event guiEvent;	
-
-	// Play music
-	music.setLoop(true);
-	music.setVolume(50);
-	music.play();
 
 	// the main game loop
 	while (window.isOpen())

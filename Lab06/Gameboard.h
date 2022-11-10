@@ -131,6 +131,12 @@ public:
 	// - return: true if the content at ALL VALID points is EMPTY_BLOCK, false otherwise
 	bool areAllLocsEmpty(const std::vector<Point>& points) const;
 
+	// Count all completed rows on the board
+	//   use getCompletedRowIndices() 
+	// - params: none
+	// - return: the count of completed rows to be removed
+	int countCompletedRows();
+
 	// Remove all completed rows from the board
 	//   use getCompletedRowIndices() and removeRows() 
 	// - params: none

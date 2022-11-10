@@ -41,6 +41,9 @@ private:
     GridTetromino nextShape;	// the tetromino shape that is "on deck".
     GridTetromino currentShape;	// the tetromino that is currently falling.
 	GridTetromino ghostShape;	// the tetromino that shows where you will drop the current piece
+	std::vector<TetShape> shapeSack;
+	int level;
+	bool resetOnNextTick;
 	
 	// Graphics members ------------------------------------------
 	sf::Sprite& blockSprite;		// the sprite used for all the blocks.
@@ -52,6 +55,7 @@ private:
 	sf::Text scoreText;				// SFML text object for displaying the score
 
 	// Audio members --------------------------------------------------
+	sf::Music music;
 	sf::SoundBuffer sfxDropBuffer;
 	sf::SoundBuffer sfxRotateBuffer;
 	sf::SoundBuffer sfxGameOverBuffer;
@@ -125,6 +129,11 @@ private:
 	// - params: none
 	// - return: nothing
 	void pickNextShape();
+
+	// Fills shapeSack with one of every shape and shuffles it 
+	// - params: none
+	// - return: nothing
+	void fillShapeSack();
 	
 	// copy the nextShape into the currentShape (through assignment)
 	//   position the currentShape to its spawn location.
@@ -236,6 +245,10 @@ private:
 	//	         of the grid, but *NOT* the top border (false otherwise)
 	bool isWithinBorders(const GridTetromino& shape) const;
 
+	// set game level based on score
+	// params: none
+	// return: nothing
+	void determineLevel();
 
 	// set secsPerTick 
 	//   - basic: use MAX_SECS_PER_TICK

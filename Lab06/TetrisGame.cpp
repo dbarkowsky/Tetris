@@ -7,6 +7,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 
 const int TetrisGame::BLOCK_WIDTH{32};			  // pixel width of a tetris block, init to 32
 const int TetrisGame::BLOCK_HEIGHT{32};			  // pixel height of a tetris block, init to 32
@@ -20,10 +21,13 @@ TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const 
 		assert(false && "Missing font: RedOctober.ttf");
 	};
 	loadAudio();
+	fillShapeSack();
 	scoreText.setFont(scoreFont);
 	scoreText.setCharacterSize(18);
 	scoreText.setFillColor(sf::Color::White);
 	scoreText.setPosition(425, 325);
+	music.setLoop(true);
+	music.setVolume(50);
 	reset();
 }
 
@@ -37,8 +41,9 @@ void TetrisGame::draw() const{
 }
 
 void TetrisGame::onKeyPressed(sf::Event& e) {
-	switch (e.key.code)
-	{
+	if (!resetOnNextTick || shapePlacedSinceLastGameLoop) {
+		switch (e.key.code)
+		{
 		case sf::Keyboard::Up:
 			attemptRotate(currentShape);
 			updateGhostShape();
@@ -62,25 +67,41 @@ void TetrisGame::onKeyPressed(sf::Event& e) {
 			break;
 		default:
 			break;
+		}
 	}
 }
 
 void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
-	secondsSinceLastTick += secondsSinceLastLoop;
+	std::cout << "secondsSinceLastTick: " << secondsSinceLastTick
+		<< ", secondsPerTick: " << secondsPerTick << std::endl;
+	// Prevent cases where elapsed time is very large, causing speed ups.
+	if (secondsSinceLastTick > 1) {
+		secondsSinceLastTick = secondsPerTick + 0.1; 
+	}
 	if (secondsSinceLastTick > secondsPerTick) {
 		tick();
 		secondsSinceLastTick -= secondsPerTick;
+		if (resetOnNextTick) {
+			resetOnNextTick = false;
+			reset();
+		}
 		if (shapePlacedSinceLastGameLoop) {
 			shapePlacedSinceLastGameLoop = false;
-			
-			const int rowsReturned = board.removeCompletedRows();
-			score += calcScore(rowsReturned);
-			updateScoreDisplay();
-			determineSecondsPerTick();
-			
 			spawnNextShape();
 			pickNextShape();
+			const int rowsToDelete = board.countCompletedRows();
+			if (rowsToDelete > 0) {
+				secondsSinceLastTick -= secondsPerTick;
+				const int rowsReturned = board.removeCompletedRows();
+				score += calcScore(rowsReturned);
+				updateScoreDisplay();
+				determineLevel();
+				determineSecondsPerTick();
+			}
 		}
+	}
+	else {
+		secondsSinceLastTick += secondsSinceLastLoop;
 	}
 }
 
@@ -112,8 +133,11 @@ void TetrisGame::tick() {
 }
 
 void TetrisGame::reset() {
+	secondsSinceLastTick = 0;
+	music.play();
 	score = 0;
 	updateScoreDisplay();
+	determineLevel();
 	determineSecondsPerTick();
 	board.empty();
 	pickNextShape();
@@ -122,7 +146,18 @@ void TetrisGame::reset() {
 }
 
 void TetrisGame::pickNextShape() {
-	nextShape.setShape(Tetromino::getRandomShape());
+	if (shapeSack.size() == 0) {
+		fillShapeSack();
+	}
+	nextShape.setShape(shapeSack.back());
+	shapeSack.pop_back();
+}
+
+void TetrisGame::fillShapeSack() {
+	for (int i = 0; i < TetShape::COUNT; i++) {
+		shapeSack.push_back(static_cast<TetShape>(i));
+	}
+	std::random_shuffle(shapeSack.begin(), shapeSack.end());
 }
 
 bool TetrisGame::TetrisGame::spawnNextShape() { 
@@ -135,7 +170,10 @@ bool TetrisGame::TetrisGame::spawnNextShape() {
 		return true;
 	}
 	else {
-		reset();
+		music.stop();
+		sfxGameOver.play();
+		secondsSinceLastTick -= secondsPerTick * 5;
+		resetOnNextTick = true;
 		return false;
 	}
 }
@@ -250,14 +288,57 @@ bool TetrisGame::isWithinBorders(const GridTetromino& shape) const {
 	return true; 
 }
 
+void TetrisGame::determineLevel() {
+	int originalLevel = level;
+	if (score > 7000) {
+		level = 5;
+	}
+	else if (score > 5000) {
+		level = 4;
+	}
+	else if (score > 3000) {
+		level = 3;
+	}
+	else if (score > 1500) {
+		level = 2;
+	}
+	else {
+		level = 1;
+	}
+	if (originalLevel != level && level != 1) {
+		sfxLevelUp.play();
+	}
+}
+
 void TetrisGame::determineSecondsPerTick() {
-	secondsPerTick = MAX_SECONDS_PER_TICK;
+	switch (level)
+	{
+	case 1:
+		secondsPerTick = MAX_SECONDS_PER_TICK;
+		break;
+	case 2:
+		secondsPerTick = MAX_SECONDS_PER_TICK - 0.2;
+		break;
+	case 3:
+		secondsPerTick = MAX_SECONDS_PER_TICK - 0.3;
+		break;
+	case 4:
+		secondsPerTick = MAX_SECONDS_PER_TICK - 0.4;
+		break;
+	case 5:
+		secondsPerTick = MIN_SECONDS_PER_TICK;
+		break;
+	default:
+		secondsPerTick = MAX_SECONDS_PER_TICK;
+		break;
+	}
 }
 
 
 void TetrisGame::loadAudio() {
 	// Load Sound Effects
 	try {
+		music.openFromFile("audio/tetrisMusic.ogg");
 		sfxDropBuffer.loadFromFile("audio/blockDrop.ogg");
 		sfxRotateBuffer.loadFromFile("audio/blockRotate.ogg");
 		sfxGameOverBuffer.loadFromFile("audio/gameOver.ogg");
