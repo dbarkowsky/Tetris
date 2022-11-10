@@ -61,10 +61,12 @@ private:
 	sf::SoundBuffer sfxRotateBuffer;
 	sf::SoundBuffer sfxGameOverBuffer;
 	sf::SoundBuffer sfxLevelUpBuffer;
+	sf::SoundBuffer sfxClearBuffer;
 	sf::Sound sfxRotate{ sfxRotateBuffer };
 	sf::Sound sfxDrop{ sfxDropBuffer };
 	sf::Sound sfxGameOver{ sfxGameOverBuffer };
 	sf::Sound sfxLevelUp{ sfxLevelUpBuffer };
+	sf::Sound sfxClear{ sfxClearBuffer };
 
 									
 	// Time members ----------------------------------------------

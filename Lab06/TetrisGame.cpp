@@ -89,9 +89,11 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 		}
 
 		if (deleteOnNextTick) {
+			std::cout << "delete Tick" << std::endl;
 			deleteOnNextTick = false;
 			const int rowsReturned = board.removeCompletedRows();
 			score += calcScore(rowsReturned);
+			sfxClear.play();
 			updateScoreDisplay();
 			determineLevel();
 			determineSecondsPerTick();
@@ -100,6 +102,7 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 		}
 
 		if (shapePlacedSinceLastGameLoop) {
+			std::cout << "place Tick" << std::endl;
 			shapePlacedSinceLastGameLoop = false;
 			const int rowsToDelete = board.countCompletedRows();
 			if (rowsToDelete > 0) {
@@ -300,20 +303,25 @@ bool TetrisGame::isWithinBorders(const GridTetromino& shape) const {
 
 void TetrisGame::determineLevel() {
 	int originalLevel = level;
-	if (score > 7000) {
+	if (score > 20000) {
 		level = 5;
+		music.setPitch(1.2);
+	}
+	else if (score > 12000) {
+		level = 4;
+		music.setPitch(1.15);
 	}
 	else if (score > 5000) {
-		level = 4;
-	}
-	else if (score > 3000) {
 		level = 3;
+		music.setPitch(1.1);
 	}
 	else if (score > 1500) {
 		level = 2;
+		music.setPitch(1.05);
 	}
 	else {
 		level = 1;
+		music.setPitch(1);
 	}
 	if (originalLevel != level && level != 1) {
 		sfxLevelUp.play();
@@ -353,6 +361,7 @@ void TetrisGame::loadAudio() {
 		sfxRotateBuffer.loadFromFile("audio/blockRotate.ogg");
 		sfxGameOverBuffer.loadFromFile("audio/gameOver.ogg");
 		sfxLevelUpBuffer.loadFromFile("audio/levelUp.ogg");
+		sfxClearBuffer.loadFromFile("audio/clear.ogg");
 	}
 	catch (const std::exception& exc) {
 		std::cout << exc.what();
