@@ -117,16 +117,16 @@ int TetrisGame::calcScore(const int rowsCleared) {
 	switch (rowsCleared)
 	{
 		case 1:
-			return 100;
+			return 100 * level;
 			break;
 		case 2:
-			return 300;
+			return 300 * level;
 			break;
 		case 3:
-			return 500;
+			return 500 * level;
 			break;
 		case 4:
-			return 800;
+			return 800 * level;
 			break;
 		default:
 			return 0;
